@@ -1,26 +1,57 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import Navbar from "@/components/ui/Navbar";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  weight: ["400", "500", "600"],
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const cabinetGrotesk = localFont({
+  src: [
+    {
+      path: "../../public/fonts/CabinetGrotesk-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/CabinetGrotesk-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-serif",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Lokesh Gile | Software Engineer & AI Developer",
-  description: "Premium engineering portfolio of Lokesh Gile - Software Engineer, AI Developer, and Research Engineer specializing in EEG Research, OCR, and AI Pipelines.",
+  title: "Lokesh Gile | Software Engineer",
+  description: "Portfolio of Lokesh Gile - Full Stack Product Engineer building scalable products, AI systems, and mobile applications.",
+  keywords: ["Software Engineer", "Full Stack Developer", "AI Engineer", "React Developer", "Next.js Developer", "Lokesh Gile"],
+  openGraph: {
+    title: "Lokesh Gile | Software Engineer",
+    description: "Full Stack Product Engineer building scalable products, AI systems, and mobile applications.",
+    url: "https://lokeshgile.com",
+    siteName: "Lokesh Gile Portfolio",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Lokesh Gile | Software Engineer",
+    description: "Full Stack Product Engineer building scalable products, AI systems, and mobile applications.",
+  },
 };
 
 export default function RootLayout({
@@ -28,14 +59,34 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Lokesh Gile",
+    jobTitle: "Software Engineer",
+    url: "https://lokeshgile.com",
+    sameAs: [
+      "https://github.com/Loki3306",
+      "https://www.linkedin.com/in/lokesh-gile-b61145248/"
+    ],
+  };
+
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} scroll-smooth`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${cabinetGrotesk.variable} scroll-smooth`}
     >
-      <body className="bg-background text-foreground min-h-screen antialiased selection:bg-white selection:text-black">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
+      <body className="bg-background text-foreground min-h-screen antialiased selection:bg-accent selection:text-black font-sans">
         <Navbar />
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

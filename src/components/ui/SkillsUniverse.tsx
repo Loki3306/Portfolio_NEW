@@ -1,362 +1,216 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  SiPython, SiTypescript, SiJavascript, SiC, SiCplusplus, 
-  SiPytorch, SiTensorflow, SiOpencv, SiNumpy, SiPandas, 
-  SiReact, SiNextdotjs, SiTailwindcss, SiThreedotjs, SiFramer, 
-  SiNodedotjs, SiExpress, SiFastapi, SiPostgresql, SiMongodb, 
-  SiRedis, SiSupabase, SiMysql, SiDocker,  
-  SiGithubactions, SiLinux, SiGit, SiGithub, 
-  SiStripe, SiRazorpay, SiFirebase,
-  SiNetlify, SiArduino, SiWebrtc, SiSocketdotio, SiJsonwebtokens
+import {
+  SiPython, SiTypescript, SiJavascript, SiC, SiCplusplus,
+  SiPytorch, SiTensorflow, SiOpencv, SiNumpy, SiPandas,
+  SiReact, SiNextdotjs, SiTailwindcss, SiThreedotjs,
+  SiNodedotjs, SiExpress, SiFastapi, SiPostgresql, SiMongodb,
+  SiRedis, SiSupabase, SiMysql, SiDocker,
+  SiGithubactions, SiLinux, SiGit,
+  SiStripe, SiNetlify, SiSocketdotio, SiHtml5, SiCss, SiPostman, 
+  SiPrisma, SiScikitlearn, SiOpenai, SiHuggingface, SiNginx, SiRailway,
+  SiLangchain, SiShadcnui, SiVite, SiRedux, SiFirebase, SiSqlite,
+  SiRender, SiVercel, SiArduino, SiEspressif, SiMqtt
 } from "react-icons/si";
-import { FaJava, FaVolumeUp, FaWaveSquare, FaHeadphones, FaMicrophone, FaBrain, FaAws } from "react-icons/fa";
-import { GiBrain } from "react-icons/gi";
-import { ChevronDown, ChevronUp, Cpu, Server, Layers, Code2, Brain } from "lucide-react";
+import { Database, Layout, Server, Brain, Cloud, Cpu, Users, ChevronDown, ChevronUp } from "lucide-react";
 
 interface SkillItem {
   name: string;
-  category: string;
-  capabilities: string[]; // ['fullstack', 'ai', 'research', 'cloud', 'emerging']
-  description: string;
-  color: string; // hex
-  colorRgb: string; // r, g, b
+  categoryIds: string[];
   icon: React.ReactNode;
-  isPrimary: boolean;
-  relatedCapsText: string[];
+  isTopSkill?: boolean;
 }
 
-interface CapabilityItem {
-  id: string;
-  title: string;
-  icon: React.ReactNode;
-  bullets: string[];
-  description: string;
-}
-
-const capabilitiesData: CapabilityItem[] = [
-  {
-    id: "fullstack",
-    title: "Full Stack Applications",
-    icon: <Code2 className="w-5 h-5" />,
-    bullets: ["SaaS Platforms", "Admin Panels", "Business Systems", "Authentication", "Payments", "Dashboards"],
-    description: "Building secure, responsive interfaces and structured server logic that process payments and sync data."
-  },
-  {
-    id: "ai",
-    title: "AI & Intelligent Systems",
-    icon: <Brain className="w-5 h-5" />,
-    bullets: ["OCR Systems", "LLM Pipelines", "Computer Vision", "Automation", "AI Assistants", "Inference Engines"],
-    description: "Orchestrating machine learning frameworks, training model layers, and configuring local LLMs."
-  },
-  {
-    id: "research",
-    title: "Research & Signal Processing",
-    icon: <Cpu className="w-5 h-5" />,
-    bullets: ["EEG Processing", "DSP Algorithms", "Beamforming", "Spatial Audio", "Audio Intelligence"],
-    description: "Bridging sensory biometrics and spatial audio streams with concurrent low-latency software algorithms."
-  },
-  {
-    id: "cloud",
-    title: "Cloud & Infrastructure",
-    icon: <Server className="w-5 h-5" />,
-    bullets: ["APIs & Caching", "Databases", "Docker Containment", "GitHub Actions CI/CD", "Scalable Architectures"],
-    description: "Deploying production-ready microservices, designing relational schemas, and structuring clouds."
-  },
-  {
-    id: "emerging",
-    title: "Emerging Technologies",
-    icon: <Layers className="w-5 h-5" />,
-    bullets: ["Blockchain Integration", "IoT Sensors", "Fintech Logic", "Real-time Streaming", "Edge Computing"],
-    description: "Exploring system boundaries, connecting hardware transceivers, and writing financial ledgers."
-  }
+const categories = [
+  { id: "all", label: "All" },
+  { id: "languages", label: "Languages" },
+  { id: "frontend", label: "Frontend" },
+  { id: "backend", label: "Backend" },
+  { id: "database", label: "Databases" },
+  { id: "ai", label: "AI / ML" },
+  { id: "devops", label: "DevOps" },
+  { id: "hardware", label: "Hardware / IoT" },
+  { id: "soft", label: "Soft Skills" },
 ];
 
 const skillsData: SkillItem[] = [
-  // Primary Skills (24)
-  { name: "Python", category: "Languages", capabilities: ["ai", "research"], description: "Primary language for model training, digital signal processing (DSP), and FastAPI backends.", color: "#3776AB", colorRgb: "55, 118, 171", icon: <SiPython className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["AI & Intelligent Systems", "Research & Signal Processing"] },
-  { name: "TypeScript", category: "Languages", capabilities: ["fullstack"], description: "Enforces static typing for frontend views and scalable Node.js scripts.", color: "#3178C6", colorRgb: "49, 120, 198", icon: <SiTypescript className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Full Stack Applications"] },
-  { name: "React.js", category: "Frontend", capabilities: ["fullstack"], description: "Component-driven user interfaces, state synchronization, and reactive views.", color: "#61DAFB", colorRgb: "97, 218, 251", icon: <SiReact className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Full Stack Applications"] },
-  { name: "Next.js", category: "Frontend", capabilities: ["fullstack"], description: "App Routing, Server Components, static site exports, and web page rendering optimization.", color: "#ffffff", colorRgb: "255, 255, 255", icon: <SiNextdotjs className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Full Stack Applications"] },
-  { name: "PyTorch", category: "AI/ML", capabilities: ["ai"], description: "Deep learning framework used to design, train, and test neural network architectures.", color: "#EE4C2C", colorRgb: "238, 76, 44", icon: <SiPytorch className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["AI & Intelligent Systems"] },
-  { name: "FastAPI", category: "Backend", capabilities: ["fullstack", "ai"], description: "High-performance Python API microservices for ML models.", color: "#009688", colorRgb: "0, 150, 136", icon: <SiFastapi className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Full Stack Applications", "AI Systems"] },
-  { name: "PostgreSQL", category: "Databases", capabilities: ["fullstack", "cloud"], description: "Primary relational database for high-integrity, structured tables.", color: "#4169E1", colorRgb: "65, 105, 225", icon: <SiPostgresql className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Full Stack Applications", "Cloud & Infrastructure"] },
-  { name: "Docker", category: "DevOps", capabilities: ["cloud"], description: "Containerizing service blocks for uniform compilation across machines.", color: "#2496ED", colorRgb: "36, 150, 237", icon: <SiDocker className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Cloud & Infrastructure"] },
-  { name: "EEG Signal Processing", category: "Research", capabilities: ["research"], description: "Acquiring, filtering, and modeling brainwave streams for neuro-control systems.", color: "#9b5de5", colorRgb: "155, 93, 229", icon: <GiBrain className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Research & Signal Processing"] },
-  { name: "Beamforming", category: "Research", capabilities: ["research"], description: "Directional spatial audio enhancement using microphone array inputs.", color: "#00f5d4", colorRgb: "0, 245, 212", icon: <FaVolumeUp className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Research & Signal Processing"] },
-  { name: "Node.js", category: "Backend", capabilities: ["fullstack"], description: "Scalable backend applications and event-driven server scripting.", color: "#339933", colorRgb: "51, 153, 51", icon: <SiNodedotjs className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Full Stack Applications"] },
-  { name: "AWS", category: "DevOps", capabilities: ["cloud"], description: "Configuring server instances, computing blocks, and cloud storage.", color: "#FF9900", colorRgb: "255, 153, 0", icon: <FaAws className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Cloud & Infrastructure"] },
-  { name: "MongoDB", category: "Databases", capabilities: ["fullstack"], description: "NoSQL document store for flexible schema structures and logs.", color: "#47A248", colorRgb: "71, 162, 72", icon: <SiMongodb className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Full Stack Applications"] },
-  { name: "Tailwind CSS", category: "Frontend", capabilities: ["fullstack"], description: "Configuring typography, responsive spacing structures, and theme properties.", color: "#06B6D4", colorRgb: "6, 182, 212", icon: <SiTailwindcss className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Full Stack Applications"] },
-  { name: "Stripe API", category: "Backend", capabilities: ["fullstack"], description: "Secure integration of payment gates, invoices, and webhook validations.", color: "#635BFF", colorRgb: "99, 91, 255", icon: <SiStripe className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Full Stack Applications"] },
-  { name: "Java", category: "Languages", capabilities: ["fullstack"], description: "Used for core data structures & algorithms and competitive programming.", color: "#F89820", colorRgb: "248, 152, 32", icon: <FaJava className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Full Stack Applications"] },
-  { name: "C++", category: "Languages", capabilities: ["research"], description: "Performance-critical programming, algorithm execution, and systems coding.", color: "#00599C", colorRgb: "0, 89, 156", icon: <SiCplusplus className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Research & Signal Processing"] },
-  { name: "TensorFlow", category: "AI/ML", capabilities: ["ai"], description: "Building predictive models and deploying trained networks to execution graphs.", color: "#FF6F00", colorRgb: "255, 111, 0", icon: <SiTensorflow className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["AI & Intelligent Systems"] },
-  { name: "Ollama", category: "AI/ML", capabilities: ["ai"], description: "Configuring and serving Large Language Models (LLMs) locally.", color: "#9c27b0", colorRgb: "156, 39, 176", icon: <FaBrain className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["AI & Intelligent Systems"] },
-  { name: "Git", category: "Tools", capabilities: ["cloud"], description: "Local version tracking, merging branches, and handling code splits.", color: "#F05032", colorRgb: "240, 80, 50", icon: <SiGit className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Cloud & Infrastructure"] },
-  { name: "GitHub", category: "Tools", capabilities: ["cloud"], description: "Hosting remote repositories, reviewing PRs, and automating builds.", color: "#ffffff", colorRgb: "255, 255, 255", icon: <SiGithub className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Cloud & Infrastructure"] },
-  { name: "Linux OS", category: "DevOps", capabilities: ["cloud", "ai"], description: "Command-line server navigation, system jobs configuration, and shell scripts.", color: "#FCC624", colorRgb: "252, 198, 36", icon: <SiLinux className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Cloud & Infrastructure", "AI Systems"] },
-  { name: "DSP Algorithms", category: "Research", capabilities: ["research"], description: "Executing STFT, window filters, and frequency analysis on signal feeds.", color: "#fee440", colorRgb: "254, 228, 64", icon: <FaMicrophone className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Research & Signal Processing"] },
-  { name: "Framer Motion", category: "Frontend", capabilities: ["fullstack"], description: "Physics-based animation control, layout transitions, and scroll events.", color: "#0055FF", colorRgb: "0, 85, 255", icon: <SiFramer className="w-4 h-4" />, isPrimary: true, relatedCapsText: ["Full Stack Applications"] },
+  // Top Skills (Shown Initially)
+  { name: "React", categoryIds: ["frontend"], icon: <SiReact className="w-5 h-5" />, isTopSkill: true },
+  { name: "Next.js", categoryIds: ["frontend"], icon: <SiNextdotjs className="w-5 h-5" />, isTopSkill: true },
+  { name: "Node.js", categoryIds: ["backend"], icon: <SiNodedotjs className="w-5 h-5" />, isTopSkill: true },
+  { name: "FastAPI", categoryIds: ["backend"], icon: <SiFastapi className="w-5 h-5" />, isTopSkill: true },
+  { name: "PostgreSQL", categoryIds: ["database"], icon: <SiPostgresql className="w-5 h-5" />, isTopSkill: true },
+  { name: "MongoDB", categoryIds: ["database"], icon: <SiMongodb className="w-5 h-5" />, isTopSkill: true },
+  { name: "Docker", categoryIds: ["devops"], icon: <SiDocker className="w-5 h-5" />, isTopSkill: true },
+  { name: "LangChain", categoryIds: ["ai"], icon: <SiLangchain className="w-5 h-5" />, isTopSkill: true },
+  { name: "PyTorch", categoryIds: ["ai"], icon: <SiPytorch className="w-5 h-5" />, isTopSkill: true },
+  { name: "Python", categoryIds: ["languages"], icon: <SiPython className="w-5 h-5" />, isTopSkill: true },
 
-  // Secondary Skills (22)
-  { name: "JavaScript", category: "Languages", capabilities: ["fullstack"], description: "Used for React frontend development and event-driven Node.js scripts.", color: "#F7DF1E", colorRgb: "247, 223, 30", icon: <SiJavascript className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Full Stack Applications"] },
-  { name: "C", category: "Languages", capabilities: ["research"], description: "Low-level system logic and hardware performance alignments.", color: "#A8B9CC", colorRgb: "168, 185, 204", icon: <SiC className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Research & Signal Processing"] },
-  { name: "SQL", category: "Languages", capabilities: ["fullstack", "cloud"], description: "Database structures, relational layouts, and query setups.", color: "#003B57", colorRgb: "0, 59, 87", icon: <SiPostgresql className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Full Stack Applications", "Cloud & Infra"] }, // reused postgres
-  { name: "OpenCV", category: "AI/ML", capabilities: ["ai"], description: "Real-time computer vision processing, image filtering, and feature extraction.", color: "#5C3EE8", colorRgb: "92, 62, 232", icon: <SiOpencv className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["AI & Intelligent Systems"] },
-  { name: "NumPy", category: "AI/ML", capabilities: ["ai", "research"], description: "Vectorized signal array manipulation and data feature engineering.", color: "#013243", colorRgb: "1, 50, 67", icon: <SiNumpy className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["AI & Signal Processing"] },
-  { name: "Pandas", category: "AI/ML", capabilities: ["ai"], description: "Structured data analysis, CSV parsing, and input feature manipulation.", color: "#150458", colorRgb: "21, 4, 88", icon: <SiPandas className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["AI & Intelligent Systems"] },
-  { name: "Express.js", category: "Backend", capabilities: ["fullstack"], description: "REST microservice routing and secure request middleware pipelines.", color: "#ffffff", colorRgb: "255, 255, 255", icon: <SiExpress className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Full Stack Applications"] },
-  { name: "Three.js", category: "Frontend", capabilities: ["fullstack", "research"], description: "WebGL graphic scene builds, camera systems, light paths, and geometry matrices.", color: "#ffffff", colorRgb: "255, 255, 255", icon: <SiThreedotjs className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Full Stack Applications", "Research & Signal"] },
-  { name: "Redis", category: "Databases", capabilities: ["fullstack", "cloud"], description: "In-memory database cache to store sessions and lower query latencies.", color: "#DC382D", colorRgb: "220, 56, 45", icon: <SiRedis className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Full Stack Applications", "Cloud & Infra"] },
-  { name: "Supabase", category: "Databases", capabilities: ["fullstack", "cloud"], description: "Relational database hosting, user auth controls, and real-time triggers.", color: "#3ECF8E", colorRgb: "62, 207, 142", icon: <SiSupabase className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Full Stack Applications", "Cloud & Infra"] },
-  { name: "MySQL", category: "Databases", capabilities: ["fullstack", "cloud"], description: "Standard relational database usage for events, tracking, and logs.", color: "#4479A1", colorRgb: "68, 121, 161", icon: <SiMysql className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Full Stack Applications", "Cloud & Infra"] },
-  { name: "GitHub Actions", category: "DevOps", capabilities: ["cloud"], description: "Configuring automated CI/CD workflows, tests, and build deployments.", color: "#2088FF", colorRgb: "32, 136, 255", icon: <SiGithubactions className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Cloud & Infrastructure"] },
-  { name: "WebRTC", category: "Emerging", capabilities: ["emerging"], description: "Real-time communication framework for low-latency browser streaming.", color: "#FF6F00", colorRgb: "255, 111, 0", icon: <SiWebrtc className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Emerging Technologies"] },
-  { name: "Socket.IO", category: "Emerging", capabilities: ["emerging"], description: "Real-time bidirectional event communication library.", color: "#ffffff", colorRgb: "255, 255, 255", icon: <SiSocketdotio className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Emerging Technologies"] },
-  { name: "JWT", category: "Backend", capabilities: ["fullstack"], description: "Structuring secure JSON Web Tokens for API authorization headers.", color: "#000000", colorRgb: "0, 0, 0", icon: <SiJsonwebtokens className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Full Stack Applications"] },
-  { name: "Razorpay", category: "Backend", capabilities: ["fullstack"], description: "Integrating regional Indian payment routes, checks, and API calls.", color: "#0055FF", colorRgb: "0, 85, 255", icon: <SiRazorpay className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Full Stack Applications"] },
-  { name: "Firebase", category: "Backend", capabilities: ["fullstack"], description: "Cloud database triggers, analytics setups, and real-time database nodes.", color: "#FFCA28", colorRgb: "255, 202, 40", icon: <SiFirebase className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Full Stack Applications"] },
-  { name: "Vercel", category: "Tools", capabilities: ["fullstack"], description: "Hosting Next.js sites, monitoring performance metrics, and build setups.", color: "#ffffff", colorRgb: "255, 255, 255", icon: <SiNextdotjs className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Full Stack Applications"] }, // reuse next logo
-  { name: "Netlify", category: "Tools", capabilities: ["fullstack"], description: "Automated serverless builds, CDN routing, and page triggers.", color: "#00C8C8", colorRgb: "0, 200, 200", icon: <SiNetlify className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Full Stack Applications"] },
-  { name: "Arduino", category: "Emerging", capabilities: ["emerging"], description: "Microcontroller coding and parsing serial data from sensor modules.", color: "#00979D", colorRgb: "0, 151, 157", icon: <SiArduino className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Emerging Technologies"] },
-  { name: "RNNoise", category: "Research", capabilities: ["research"], description: "Recurrent neural network noise suppression workflows for audio inputs.", color: "#ff006e", colorRgb: "255, 0, 110", icon: <FaWaveSquare className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Research & Signal Processing"] },
-  { name: "Spatial Audio Synthesis", category: "Research", capabilities: ["research"], description: "Generating sound rendering patterns based on angle vectors.", color: "#3a86c8", colorRgb: "58, 134, 200", icon: <FaHeadphones className="w-4 h-4" />, isPrimary: false, relatedCapsText: ["Research & Signal Processing"] },
+  // Languages
+  { name: "Java", categoryIds: ["languages"], icon: <span className="font-bold font-mono">JAVA</span> },
+  { name: "JavaScript", categoryIds: ["languages"], icon: <SiJavascript className="w-5 h-5" /> },
+  { name: "TypeScript", categoryIds: ["languages"], icon: <SiTypescript className="w-5 h-5" /> },
+  { name: "C", categoryIds: ["languages"], icon: <SiC className="w-5 h-5" /> },
+  { name: "C++", categoryIds: ["languages"], icon: <SiCplusplus className="w-5 h-5" /> },
+  { name: "SQL", categoryIds: ["languages"], icon: <Database className="w-5 h-5" /> },
+  { name: "Bash", categoryIds: ["languages"], icon: <span className="font-bold font-mono">BASH</span> },
+
+  // Frontend
+  { name: "React Native", categoryIds: ["frontend"], icon: <SiReact className="w-5 h-5" /> },
+  { name: "HTML5", categoryIds: ["frontend"], icon: <SiHtml5 className="w-5 h-5" /> },
+  { name: "CSS3", categoryIds: ["frontend"], icon: <SiCss className="w-5 h-5" /> },
+  { name: "TailwindCSS", categoryIds: ["frontend"], icon: <SiTailwindcss className="w-5 h-5" /> },
+  { name: "Redux", categoryIds: ["frontend"], icon: <SiRedux className="w-5 h-5" /> },
+  { name: "Zustand", categoryIds: ["frontend"], icon: <Layout className="w-5 h-5" /> },
+  { name: "ShadCN", categoryIds: ["frontend"], icon: <SiShadcnui className="w-5 h-5" /> },
+  { name: "Vite", categoryIds: ["frontend"], icon: <SiVite className="w-5 h-5" /> },
+  { name: "WebGL", categoryIds: ["frontend"], icon: <SiThreedotjs className="w-5 h-5" /> },
+
+  // Backend
+  { name: "Express.js", categoryIds: ["backend"], icon: <SiExpress className="w-5 h-5" /> },
+  { name: "REST APIs", categoryIds: ["backend"], icon: <Server className="w-5 h-5" /> },
+  { name: "JWT", categoryIds: ["backend"], icon: <span className="font-bold font-mono text-xs">JWT</span> },
+  { name: "OAuth", categoryIds: ["backend"], icon: <span className="font-bold font-mono text-xs">OAuth</span> },
+  { name: "Socket.IO", categoryIds: ["backend"], icon: <SiSocketdotio className="w-5 h-5" /> },
+  { name: "Stripe", categoryIds: ["backend"], icon: <SiStripe className="w-5 h-5" /> },
+  { name: "Prisma", categoryIds: ["backend"], icon: <SiPrisma className="w-5 h-5" /> },
+
+  // Databases
+  { name: "MySQL", categoryIds: ["database"], icon: <SiMysql className="w-5 h-5" /> },
+  { name: "Redis", categoryIds: ["database"], icon: <SiRedis className="w-5 h-5" /> },
+  { name: "Supabase", categoryIds: ["database"], icon: <SiSupabase className="w-5 h-5" /> },
+  { name: "Firebase", categoryIds: ["database"], icon: <SiFirebase className="w-5 h-5" /> },
+  { name: "PostGIS", categoryIds: ["database"], icon: <span className="font-bold font-mono text-xs">POSTGIS</span> },
+  { name: "SQLite", categoryIds: ["database"], icon: <SiSqlite className="w-5 h-5" /> },
+
+  // AI / ML
+  { name: "TensorFlow", categoryIds: ["ai"], icon: <SiTensorflow className="w-5 h-5" /> },
+  { name: "Scikit-Learn", categoryIds: ["ai"], icon: <SiScikitlearn className="w-5 h-5" /> },
+  { name: "Pandas", categoryIds: ["ai"], icon: <SiPandas className="w-5 h-5" /> },
+  { name: "NumPy", categoryIds: ["ai"], icon: <SiNumpy className="w-5 h-5" /> },
+  { name: "OpenCV", categoryIds: ["ai"], icon: <SiOpencv className="w-5 h-5" /> },
+  { name: "LangGraph", categoryIds: ["ai"], icon: <Brain className="w-5 h-5" /> },
+  { name: "OpenAI", categoryIds: ["ai"], icon: <SiOpenai className="w-5 h-5" /> },
+  { name: "Ollama", categoryIds: ["ai"], icon: <span className="font-bold font-mono text-xs">Ollama</span> },
+  { name: "Hugging Face", categoryIds: ["ai"], icon: <SiHuggingface className="w-5 h-5" /> },
+  { name: "EasyOCR", categoryIds: ["ai"], icon: <span className="font-bold font-mono text-xs">OCR</span> },
+  { name: "XGBoost", categoryIds: ["ai"], icon: <span className="font-bold font-mono text-xs">XGB</span> },
+
+  // DevOps
+  { name: "Git", categoryIds: ["devops"], icon: <SiGit className="w-5 h-5" /> },
+  { name: "GitHub Actions", categoryIds: ["devops"], icon: <SiGithubactions className="w-5 h-5" /> },
+  { name: "Linux", categoryIds: ["devops"], icon: <SiLinux className="w-5 h-5" /> },
+  { name: "Nginx", categoryIds: ["devops"], icon: <SiNginx className="w-5 h-5" /> },
+  { name: "Vercel", categoryIds: ["devops"], icon: <SiVercel className="w-5 h-5" /> },
+  { name: "Netlify", categoryIds: ["devops"], icon: <SiNetlify className="w-5 h-5" /> },
+  { name: "Render", categoryIds: ["devops"], icon: <SiRender className="w-5 h-5" /> },
+  { name: "Railway", categoryIds: ["devops"], icon: <SiRailway className="w-5 h-5" /> },
+  { name: "Postman", categoryIds: ["devops"], icon: <SiPostman className="w-5 h-5" /> },
+
+  // Hardware / IoT
+  { name: "ESP32", categoryIds: ["hardware"], icon: <SiEspressif className="w-5 h-5" /> },
+  { name: "Arduino", categoryIds: ["hardware"], icon: <SiArduino className="w-5 h-5" /> },
+  { name: "Raspberry Pi", categoryIds: ["hardware"], icon: <Cpu className="w-5 h-5" /> },
+  { name: "MQTT", categoryIds: ["hardware"], icon: <SiMqtt className="w-5 h-5" /> },
+  { name: "Sensor Integration", categoryIds: ["hardware"], icon: <Cloud className="w-5 h-5" /> },
+  { name: "Embedded Systems", categoryIds: ["hardware"], icon: <Cpu className="w-5 h-5" /> },
+  { name: "ReSpeaker Arrays", categoryIds: ["hardware"], icon: <span className="font-bold font-mono text-xs">MIC</span> },
+
+  // Soft Skills
+  { name: "Leadership", categoryIds: ["soft"], icon: <Users className="w-5 h-5" /> },
+  { name: "Project Management", categoryIds: ["soft"], icon: <Users className="w-5 h-5" /> },
+  { name: "Public Speaking", categoryIds: ["soft"], icon: <Users className="w-5 h-5" /> },
+  { name: "Technical Communication", categoryIds: ["soft"], icon: <Users className="w-5 h-5" /> },
+  { name: "Event Management", categoryIds: ["soft"], icon: <Users className="w-5 h-5" /> },
+  { name: "Team Collaboration", categoryIds: ["soft"], icon: <Users className="w-5 h-5" /> },
+  { name: "Stakeholder Coordination", categoryIds: ["soft"], icon: <Users className="w-5 h-5" /> },
+  { name: "Problem Solving", categoryIds: ["soft"], icon: <Users className="w-5 h-5" /> },
 ];
 
 export default function SkillsUniverse() {
-  const [hoveredCapability, setHoveredCapability] = useState<string | null>(null);
-  const [hoveredSkill, setHoveredSkill] = useState<SkillItem | null>(null);
-  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const [isExpanded, setIsExpanded] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("all");
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    setTooltipPos({
-      x: e.clientX,
-      y: e.clientY - 50,
-    });
-  };
-
-  const visibleSkills = isExpanded 
-    ? skillsData 
-    : skillsData.filter(skill => skill.isPrimary);
+  const displayedSkills = isExpanded 
+    ? skillsData.filter((s) => activeCategory === "all" ? true : s.categoryIds.includes(activeCategory))
+    : skillsData.filter((s) => s.isTopSkill);
 
   return (
-    <section id="skills" className="py-24 px-6 lg:px-8 max-w-6xl mx-auto w-full relative h-auto">
-      {/* Title */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8 }}
-        className="mb-16 text-center md:text-left"
-      >
-        <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
-          <span className="text-[10px] uppercase font-mono tracking-widest text-zinc-500 font-bold">
-            {"// Systems, Platforms & Technologies"}
-          </span>
-        </div>
-        <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-4">
-          Engineering Across Domains
-        </h2>
-        <div className="h-[1px] w-24 bg-white/20 mx-auto md:mx-0" />
-      </motion.div>
+    <section id="skills" ref={scrollRef} className="py-16 px-6 lg:px-8 max-w-6xl mx-auto w-full relative">
+      <div className="mb-12">
+        <h2 className="heading-section text-white mb-4">Tech Stack</h2>
+        <div className="w-12 h-1 bg-accent" />
+      </div>
 
-      {/* LAYER 1: CAPABILITY CARDS */}
-      <div className="mb-16">
-        <h3 className="font-mono text-xs uppercase tracking-widest text-zinc-400 mb-6 font-semibold md:text-left text-center">
-          Core Capabilities // What I Build
-        </h3>
+      <div className="flex flex-col gap-8">
         
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {capabilitiesData.map((cap) => {
-            const isHovered = hoveredCapability === cap.id;
-            const isAnyHovered = hoveredCapability !== null;
-            
-            return (
-              <div
-                key={cap.id}
-                onMouseEnter={() => setHoveredCapability(cap.id)}
-                onMouseLeave={() => setHoveredCapability(null)}
-                className={`glass-panel linear-border-glow rounded-2xl p-5 bg-zinc-950/20 border transition-all duration-300 flex flex-col justify-between min-h-[220px] ${
-                  isHovered 
-                    ? "border-white/30 scale-[1.03] shadow-[0_10px_25px_rgba(255,255,255,0.05)] bg-zinc-900/10" 
-                    : isAnyHovered 
-                      ? "border-zinc-900/40 opacity-40" 
-                      : "border-zinc-900/60 hover:border-zinc-800"
-                }`}
-              >
-                <div className="flex flex-col gap-3">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-colors ${
-                    isHovered ? "bg-white text-black border-white" : "bg-zinc-900/80 border-zinc-800 text-zinc-300"
-                  }`}>
-                    {cap.icon}
-                  </div>
-                  <h4 className="text-white text-xs font-bold font-mono uppercase tracking-wider">{cap.title}</h4>
-                  <p className="text-[10px] text-zinc-500 leading-relaxed font-light">{cap.description}</p>
-                </div>
-                
-                <div className="border-t border-zinc-900/80 pt-3 mt-4">
-                  <div className="flex flex-wrap gap-1.5">
-                    {cap.bullets.slice(0, 3).map((bullet) => (
-                      <span key={bullet} className="text-[8px] font-mono bg-zinc-950 px-1.5 py-0.5 rounded text-zinc-400">
-                        {bullet}
-                      </span>
-                    ))}
-                    {cap.bullets.length > 3 && (
-                      <span className="text-[8px] font-mono text-zinc-600">
-                        +{cap.bullets.length - 3} more
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* LAYER 2: THE TECHNOLOGY CLOUD */}
-      <div>
-        <h3 className="font-mono text-xs uppercase tracking-widest text-zinc-400 mb-8 font-semibold md:text-left text-center">
-          Technology Stack // Sourced Components
-        </h3>
-
-        <div className="glass-panel linear-border-glow rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden bg-zinc-950/40">
-          {/* Subtle grid backdrop inside canvas */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808003_1px,transparent_1px),linear-gradient(to_bottom,#80808003_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
-
-          {/* Collapsible content wrapper */}
-          <motion.div 
-            layout
-            className="flex flex-wrap items-center justify-center gap-3.5 max-w-4xl relative z-10"
-          >
-            {visibleSkills.map((skill, index) => {
-              // Highlight rules:
-              // 1. If no capability card is hovered, all remain full opacity (or hover glows them)
-              // 2. If a capability card is hovered, highlight only if it belongs to that capability
-              const isMapped = skill.capabilities.includes(hoveredCapability || "");
-              const isHighlighted = hoveredCapability === null || isMapped;
-              
-              return (
-                <motion.div
-                  key={skill.name}
-                  layout
-                  animate={{
-                    // Subtle float movement
-                    y: [0, Math.sin(index * 1.5) * 6, 0],
-                    x: [0, Math.cos(index * 1.2) * 4, 0],
-                    opacity: isHighlighted ? 1 : 0.15,
-                    scale: isHighlighted ? 1 : 0.9,
-                  }}
-                  transition={{
-                    y: {
-                      duration: 3 + (index % 3),
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      delay: (index % 5) * 0.1,
-                    },
-                    x: {
-                      duration: 3.5 + (index % 4),
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      delay: (index % 5) * 0.05,
-                    },
-                    opacity: { duration: 0.3 },
-                    scale: { duration: 0.3 },
-                  }}
-                  onMouseEnter={(e) => {
-                    if (isHighlighted) {
-                      setHoveredSkill(skill);
-                      setTooltipPos({ x: e.clientX, y: e.clientY - 50 });
-                    }
-                  }}
-                  onMouseLeave={() => setHoveredSkill(null)}
-                  onMouseMove={handleMouseMove}
-                  style={{
-                    color: skill.color,
-                    borderColor: (hoveredSkill?.name === skill.name || (hoveredCapability && isMapped))
-                      ? skill.color 
-                      : "rgba(39, 39, 42, 0.4)",
-                    boxShadow: (hoveredSkill?.name === skill.name || (hoveredCapability && isMapped))
-                      ? `0 0 15px rgba(${skill.colorRgb}, 0.2)` 
-                      : "none",
-                  }}
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-zinc-950 border text-zinc-300 cursor-default select-none hover:text-white hover:scale-[1.08] transition-all duration-300 font-mono text-[10px] font-medium"
-                >
-                  <span style={{ color: skill.color }}>
-                    {skill.icon}
-                  </span>
-                  <span className="text-zinc-300 hover:text-white transition-colors duration-200">
-                    {skill.name}
-                  </span>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-
-          {/* VIEW MORE TOGGLE BUTTON */}
-          <div className="mt-10 relative z-20 flex justify-center w-full border-t border-zinc-900 pt-6">
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="flex items-center gap-2 px-6 py-2 rounded-full border border-zinc-800 bg-zinc-950 text-xs font-mono text-zinc-400 hover:text-white hover:border-zinc-700 transition-colors"
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="flex flex-wrap gap-2 overflow-hidden"
             >
-              {isExpanded ? (
-                <>
-                  Show Top Technologies <ChevronUp className="w-4 h-4" />
-                </>
-              ) : (
-                <>
-                  View All {skillsData.length} Technologies <ChevronDown className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </div>
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`px-4 py-2 text-xs font-mono tracking-widest uppercase transition-all duration-300 border ${
+                    activeCategory === cat.id
+                      ? "border-accent bg-accent/10 text-accent"
+                      : "border-zinc-800 bg-zinc-950/50 text-zinc-500 hover:border-zinc-600 hover:text-zinc-300"
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <motion.div layout className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <AnimatePresence mode="popLayout">
+            {displayedSkills.map((skill) => (
+              <motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.3 }}
+                key={skill.name}
+                className="flex items-center gap-3 p-4 glass-panel hover:border-accent/30 transition-all duration-300 text-zinc-400 hover:text-white"
+              >
+                <div className="text-zinc-500 flex-shrink-0">
+                  {skill.icon}
+                </div>
+                <span className="text-sm font-medium opacity-90 transition-opacity whitespace-nowrap overflow-hidden text-ellipsis">
+                  {skill.name}
+                </span>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+
+        <div className="flex justify-center mt-4">
+          <button 
+            onClick={() => {
+              setIsExpanded(!isExpanded);
+              if (isExpanded) setActiveCategory("all");
+            }}
+            className="flex items-center gap-2 px-6 py-3 border border-zinc-800 text-zinc-300 font-mono text-xs uppercase tracking-widest hover:border-accent hover:text-accent transition-colors"
+          >
+            {isExpanded ? (
+              <>View Less <ChevronUp className="w-4 h-4" /></>
+            ) : (
+              <>View More Skills <ChevronDown className="w-4 h-4" /></>
+            )}
+          </button>
         </div>
       </div>
-
-      {/* Brand Glow Tooltip */}
-      <AnimatePresence>
-        {hoveredSkill && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 5 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 5 }}
-            transition={{ duration: 0.1 }}
-            style={{
-              position: "fixed",
-              top: tooltipPos.y,
-              left: tooltipPos.x,
-              transform: "translate(-50%, -100%)",
-              pointerEvents: "none",
-              zIndex: 100,
-              boxShadow: `0 8px 30px rgba(${hoveredSkill.colorRgb}, 0.15)`,
-              borderColor: hoveredSkill.color,
-            }}
-            className="bg-black/95 border px-4 py-3 rounded-2xl text-[10px] text-zinc-300 max-w-xs backdrop-blur-md transition-all"
-          >
-            <div className="flex items-center gap-2 mb-1.5">
-              <span style={{ color: hoveredSkill.color }}>
-                {hoveredSkill.icon}
-              </span>
-              <p className="font-bold text-white text-xs font-mono">{hoveredSkill.name}</p>
-            </div>
-            
-            <p className="leading-relaxed font-light text-zinc-400 mb-2">{hoveredSkill.description}</p>
-            
-            <div className="border-t border-zinc-900 pt-2 flex items-center gap-1.5 flex-wrap">
-              <span className="text-[8px] uppercase tracking-wider font-mono text-zinc-500 font-bold">Related:</span>
-              {hoveredSkill.relatedCapsText.map((tag) => (
-                <span key={tag} className="text-[8px] font-mono px-1.5 py-0.5 rounded bg-zinc-900 text-zinc-400 border border-zinc-800">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
   );
 }

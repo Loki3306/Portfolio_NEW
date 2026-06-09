@@ -1,15 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import dynamic from "next/dynamic";
-import { motion } from "framer-motion";
+import { motion, useScroll } from "framer-motion";
 import { ArrowDown } from "lucide-react";
-import AboutSection from "@/components/ui/AboutSection";
-import SkillsUniverse from "@/components/ui/SkillsUniverse";
-import ExperienceSection from "@/components/ui/ExperienceSection";
-import ResearchSection from "@/components/ui/ResearchSection";
-import ProjectsSection from "@/components/ui/ProjectsSection";
-import AchievementsSection from "@/components/ui/AchievementsSection";
-import ContactSection from "@/components/ui/ContactSection";
+const AboutSection = dynamic(() => import("@/components/ui/AboutSection"));
+const SkillsUniverse = dynamic(() => import("@/components/ui/SkillsUniverse"));
+const ExperienceSection = dynamic(() => import("@/components/ui/ExperienceSection"));
+const ProjectsSection = dynamic(() => import("@/components/ui/ProjectsSection"));
+const AchievementsSection = dynamic(() => import("@/components/ui/AchievementsSection"));
+const AIAssistant = dynamic(() => import("@/components/ui/AIAssistant"), { ssr: false });
+import ParticleLoader from "@/components/scene/ParticleLoader";
+const FooterCTA = dynamic(() => import("@/components/ui/FooterCTA"));
 
 // Dynamically import the R3F scene to prevent SSR issues (window is not defined)
 const HeroScene = dynamic(() => import("@/components/scene/HeroScene"), {
@@ -20,6 +22,14 @@ const HeroScene = dynamic(() => import("@/components/scene/HeroScene"), {
     </div>
   ),
 });
+
+const SectionDivider = () => (
+  <div className="w-full flex justify-center py-8 opacity-30 pointer-events-none overflow-hidden">
+    <svg width="300" height="40" viewBox="0 0 300 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 20 Q 75 40 150 20 T 300 20" stroke="currentColor" strokeWidth="1" className="text-zinc-700" strokeDasharray="4 4" fill="none" />
+    </svg>
+  </div>
+);
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -45,18 +55,29 @@ const itemVariants = {
 };
 
 export default function Home() {
-  return (
-    <div className="relative min-h-screen flex flex-col bg-background overflow-hidden selection:bg-white selection:text-black">
-      {/* Background Radial Glow */}
-      <div className="absolute inset-0 radial-dark-glow -z-20 pointer-events-none" />
+  const { scrollYProgress } = useScroll();
+  const [loading, setLoading] = useState(true);
 
-      {/* Grid Pattern overlay for tech feel */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] -z-10 pointer-events-none" />
+  return (
+    <div className="relative min-h-screen flex flex-col bg-background overflow-hidden selection:bg-accent selection:text-black">
+      {loading && <ParticleLoader onComplete={() => setLoading(false)} />}
+      
+      {/* Scroll Progress Indicator */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent to-accent-light origin-left z-50"
+        style={{ scaleX: scrollYProgress }}
+      />
+      
+      {/* Blueprint Grid Pattern overlay for tech feel */}
+      <div className="fixed inset-0 bg-blueprint pointer-events-none -z-20 opacity-[0.25] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+
+      {/* Background Soft Glow */}
+      <div className="absolute inset-0 radial-dark-glow -z-30 pointer-events-none" />
 
       {/* Section 1: Hero Section */}
-      <section className="relative min-h-screen flex flex-col justify-between max-w-6xl mx-auto w-full px-6 lg:px-8 pt-32 pb-12 gap-8 md:gap-4">
+      <section className="relative min-h-[85vh] flex flex-col justify-center max-w-6xl mx-auto w-full px-6 lg:px-8 pt-32 pb-8 gap-8 md:gap-4">
         <div className="flex-1 flex flex-col-reverse md:flex-row items-center justify-center gap-8 md:gap-4">
-          
+
           {/* Left Side: Technical Info / Brand */}
           <motion.div
             variants={containerVariants}
@@ -65,37 +86,32 @@ export default function Home() {
             className="flex-[1.2] flex flex-col items-start text-left z-10"
           >
             {/* Small Badge */}
-            <motion.div
-              variants={itemVariants}
-              className="flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800/80 bg-zinc-900/50 text-[10px] uppercase tracking-widest text-zinc-400 font-mono mb-6"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              {"// Active for Research & System Development"}
+            <motion.div variants={itemVariants} className="flex items-center gap-3 mb-6">
+                <span className="text-xs font-mono tracking-widest text-zinc-500 uppercase font-semibold">
+                  Lokesh Gile
+                </span>
+                <span className="w-1 h-1 rounded-full bg-accent animate-pulse" />
+                <span className="text-xs font-mono tracking-widest text-zinc-500 uppercase">
+                  Available for new roles
+                </span>
             </motion.div>
 
             {/* Powerful Headline */}
-            <motion.h1
-              variants={itemVariants}
-              className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white leading-[1.1]"
-            >
-              Engineering intelligence through software, signals, and systems.
-            </motion.h1>
-
-            {/* Subtitle name block */}
-            <motion.p
-              variants={itemVariants}
-              className="mt-4 text-xs font-mono text-zinc-500 uppercase tracking-widest"
-            >
-              Portfolio of Lokesh Gile
-            </motion.p>
-
-            {/* Short Description */}
-            <motion.p
-              variants={itemVariants}
-              className="mt-6 text-zinc-400 text-sm md:text-base max-w-xl leading-relaxed font-light"
-            >
-              Developing real-time systems at the intersection of machine learning, digital signal processing, and robust software engineering. From spatial audio pipelines for assistive technology to neuro-controlled devices, my focus is bridging the gap between raw hardware signals and intelligent software actions.
-            </motion.p>
+            <motion.div variants={itemVariants} className="mb-8">
+              <h1 className="heading-hero text-white mb-6">
+                Full-Stack Engineer.
+              </h1>
+              <p className="text-body max-w-xl text-zinc-300 font-medium text-lg leading-relaxed mb-6">
+                Building scalable products, AI systems, and business platforms from idea to deployment.
+              </p>
+              <div className="flex flex-col gap-1 text-sm font-mono text-zinc-500 uppercase tracking-widest">
+                <span><span className="text-accent">▹</span> Frontend.</span>
+                <span><span className="text-accent">▹</span> Backend.</span>
+                <span><span className="text-accent">▹</span> AI.</span>
+                <span><span className="text-accent">▹</span> Mobile.</span>
+                <span><span className="text-accent">▹</span> Cloud.</span>
+              </div>
+            </motion.div>
 
             {/* Primary CTAs */}
             <motion.div variants={itemVariants} className="mt-8 flex flex-wrap gap-3">
@@ -122,9 +138,15 @@ export default function Home() {
             </motion.div>
           </motion.div>
 
-          {/* Right Side: Interactive 3D Visualization */}
-          <div className="flex-1 w-full h-[300px] md:h-[450px] flex items-center justify-center relative select-none">
-            <HeroScene />
+          {/* Right Side: Abstract 3D Hero */}
+          <div className="flex-1 w-full h-[300px] md:h-[450px] flex items-center justify-center relative select-none order-first md:order-last mb-8 md:mb-0">
+            {/* Soft Glow */}
+            <div className="absolute inset-0 bg-accent/10 blur-[100px] rounded-full pointer-events-none" />
+
+            {/* Abstract 3D Elements */}
+            <div className="absolute inset-0 z-0">
+              <HeroScene />
+            </div>
           </div>
         </div>
 
@@ -140,16 +162,12 @@ export default function Home() {
           </div>
           <div className="flex flex-wrap gap-x-8 gap-y-3">
             <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              Lead Software Engineer Intern <span className="text-zinc-700">@</span> <span className="text-white">USCAPES</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+              Software Developer <span className="text-zinc-700">@</span> <span className="text-white">USCAPES</span>
             </div>
             <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              Technical Contributor <span className="text-zinc-700">@</span> <span className="text-white">Skillzo.AI</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-zinc-600" />
-              Events Lead <span className="text-zinc-700">@</span> <span className="text-white">CSI-SPIT</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-accent/50" />
+              App Developer <span className="text-zinc-700">@</span> <span className="text-white">EOVI</span>
             </div>
           </div>
         </motion.div>
@@ -166,28 +184,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Section 2: About Me & Education */}
+
       <AboutSection />
 
-      {/* Section 3: Skills Universe */}
+      <SectionDivider />
       <SkillsUniverse />
 
-      {/* Section 4: Experience */}
+      <SectionDivider />
       <ExperienceSection />
 
-      {/* Section 5: Research & Engineering */}
-      <ResearchSection />
-
-      {/* Section 6: Projects */}
+      <SectionDivider />
       <ProjectsSection />
 
-      {/* Section 7: Achievements */}
+      <SectionDivider />
       <AchievementsSection />
 
-      {/* Section 8: Contact */}
-      <ContactSection />
+      <SectionDivider />
+      <FooterCTA />
+
+      {/* Floating AI Assistant */}
+      <AIAssistant />
     </div>
   );
 }
-
-

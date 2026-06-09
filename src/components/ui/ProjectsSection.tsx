@@ -1,479 +1,362 @@
 "use client";
 
-import { useState } from "react";
+import React, { useRef, useState, useEffect, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ExternalLink, Star, Layers, Brain, Server, Zap, ChevronRight } from "lucide-react";
-import { SiGithub } from "react-icons/si";
+import { FaGithub, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 interface Project {
   id: string;
-  rank?: number;
   title: string;
   tagline: string;
-  category: string;
-  categoryId: string;
-  problem: string;
-  solution: string;
+  impact: string;
   techStack: string[];
-  highlights: string[];
   github?: string;
-  demo?: string;
-  isFlagship: boolean;
-  accentColor: string;
-  accentRgb: string;
+  live?: string;
+  
+  // Expanded details
+  overview: string;
+  role: string;
+  implementation: string;
+  features: string[];
+  challenges: string[];
+  outcome: string;
 }
-
-const categories = [
-  { id: "all", label: "All Projects", icon: <Layers className="w-3.5 h-3.5" /> },
-  { id: "ai", label: "AI & Intelligent Systems", icon: <Brain className="w-3.5 h-3.5" /> },
-  { id: "fullstack", label: "Full Stack Platforms", icon: <Server className="w-3.5 h-3.5" /> },
-  { id: "research", label: "Research & DSP", icon: <Zap className="w-3.5 h-3.5" /> },
-  { id: "emerging", label: "Emerging Tech", icon: <Star className="w-3.5 h-3.5" /> },
-];
 
 const projects: Project[] = [
   {
-    id: "eeg-aad",
-    rank: 1,
-    title: "EEG Auditory Attention Decoding",
-    tagline: "Subject-independent brain-computer interface for hearing assistive technology",
-    category: "Research & DSP",
-    categoryId: "research",
-    problem:
-      "Hearing aids amplify all speakers equally, unable to detect who the listener intends to hear. In noisy environments, this fails people with hearing loss.",
-    solution:
-      "A Temporal CNN trained on 8-channel EEG recordings that decodes listener attention — binary classification between two concurrent speech streams — without any per-subject calibration data.",
-    techStack: ["Python", "PyTorch", "NumPy", "SciPy", "Temporal CNN", "EEG", "LOSO Cross-Validation"],
-    highlights: [
-      "8-channel configuration (vs 64+ in standard systems)",
-      "Subject-independent: generalizes to unseen individuals",
-      "~69K parameter model — edge deployable",
-      "18-subject LOSO evaluation — all folds successful",
-      "DTU-style AAD dataset, 64Hz sampling",
-      "IEEE-style research paper",
-    ],
-    github: "https://github.com/Loki3306",
-    isFlagship: true,
-    accentColor: "rgba(155, 93, 229, 0.08)",
-    accentRgb: "155, 93, 229",
+    id: "neuro-controlled-hearing-aid",
+    title: "Neuro-Controlled Hearing Aid",
+    tagline: "AI-powered directional hearing system",
+    impact: "Contributing to next-generation assistive hearing technology with real-time target speech enhancement.",
+    techStack: ["Python", "PyTorch", "DSP", "ReSpeaker", "FastAPI"],
+    overview: "An intelligent hearing assistance system combining spatial audio processing, machine learning, and embedded hardware to improve real-world listening experiences in noisy environments.",
+    role: "Developed real-time audio processing pipelines and integrated hardware microphone arrays.",
+    implementation: "Python, PyTorch, FastAPI, and DSP libraries interfacing with ReSpeaker Core v2.",
+    features: ["Real-time audio processing", "Sound source localization (SRP-PHAT)", "Beamforming workflows", "Target speech enhancement"],
+    challenges: ["Minimizing latency in real-time audio pipelines", "Optimizing models for edge deployment"],
+    outcome: "Functional hardware-software prototype capable of isolating target speakers in noisy environments."
   },
   {
-    id: "grocify",
-    rank: 2,
-    title: "Grocify",
-    tagline: "Full-stack grocery platform with real-time inventory, cart, and payment flows",
-    category: "Full Stack Platforms",
-    categoryId: "fullstack",
-    problem:
-      "Local grocery businesses lack digital infrastructure — no inventory management, no online ordering, no payment integration.",
-    solution:
-      "A production-grade full-stack web platform with real-time inventory tracking, user auth, cart management, and integrated payment processing via Stripe and Razorpay.",
-    techStack: ["React", "Next.js", "Node.js", "PostgreSQL", "Stripe", "Razorpay", "Tailwind CSS", "JWT"],
-    highlights: [
-      "Full-stack delivery: frontend to database to payments",
-      "Multi-gateway payment support (Stripe + Razorpay)",
-      "JWT-based authentication with role separation",
-      "PostgreSQL relational schema design",
-      "Admin dashboard for inventory and order management",
-    ],
-    github: "https://github.com/Loki3306",
-    isFlagship: true,
-    accentColor: "rgba(16, 185, 129, 0.08)",
-    accentRgb: "16, 185, 129",
+    id: "eovi",
+    title: "EOVI Mobile Platform",
+    tagline: "React Native content discovery platform",
+    impact: "Delivered a seamless mobile content experience with robust deep linking and social media integrations.",
+    techStack: ["React Native", "Node.js", "JavaScript", "Content Systems"],
+    overview: "A mobile platform focused on content discovery, curation, and social sharing for modern media consumption.",
+    role: "Built core application features, social media embeddings, and internal content management tools.",
+    implementation: "React Native frontend, Node.js backend, and deep linking infrastructure.",
+    features: ["Social media embedding", "Instagram integration", "Deep linking across screens", "Content management admin panel"],
+    challenges: ["Handling complex native deep linking across iOS and Android", "Optimizing feed scroll performance"],
+    outcome: "Successful deployment of core features enhancing user engagement and content discovery."
   },
   {
-    id: "beamforming",
-    rank: 3,
-    title: "Spatial Audio Beamforming System",
-    tagline: "Directional audio capture using SRP-PHAT and ReSpeaker microphone array",
-    category: "Research & DSP",
-    categoryId: "research",
-    problem:
-      "Capturing audio from a specific direction in a noisy room requires more than a single microphone — standard setups pick up all sound equally.",
-    solution:
-      "Real-time SRP-PHAT (Steered Response Power — Phase Transform) direction-of-arrival estimation with adaptive beamforming filters applied to a 4-microphone ReSpeaker array.",
-    techStack: ["Python", "NumPy", "SciPy", "ReSpeaker", "SRP-PHAT", "STFT", "ISTFT"],
-    highlights: [
-      "4-mic ReSpeaker hardware array integration",
-      "SRP-PHAT direction-of-arrival estimation",
-      "Real-time beamforming filters",
-      "STFT/ISTFT pipeline for frequency-domain processing",
-      "Bridges hardware signal acquisition and software DSP",
-    ],
-    github: "https://github.com/Loki3306",
-    isFlagship: true,
-    accentColor: "rgba(0, 245, 212, 0.07)",
-    accentRgb: "0, 245, 212",
+    id: "krushi-unnati",
+    title: "Krushi Unnati",
+    tagline: "ESP32 IoT sensor network + ML crop recommendations",
+    impact: "Full-stack agricultural platform generating real-time crop and irrigation recommendations using XGBoost and MQTT.",
+    techStack: ["ESP32", "FastAPI", "React", "XGBoost", "PostgreSQL"],
+    github: "https://github.com/Loki3306/Smart-Farming_HACK",
+    overview: "An agricultural technology solution focused on improving farming workflows and decision support systems through IoT and ML.",
+    role: "Built the ML backend, IoT ingestion pipeline, and frontend dashboard.",
+    implementation: "ESP32 firmware (MQTT), FastAPI backend, XGBoost inference, React dashboard.",
+    features: ["Real-time soil telemetry", "ML-driven crop recommendations", "Irrigation scheduling", "Historical data analysis"],
+    challenges: ["Ensuring reliable MQTT connections in poor connectivity areas", "Tuning XGBoost models on sparse data"],
+    outcome: "Domain Prize Winner at Krushi Unnati Hackathon."
+  },
+  {
+    id: "skillzo",
+    title: "Skillzo Contributions",
+    tagline: "AI-powered sports analytics integrations",
+    impact: "Integrated Stripe workflows and AI-powered features using LangChain and OpenAI into a production environment.",
+    techStack: ["LangChain", "OpenAI", "Stripe", "Node.js", "Python"],
+    overview: "An AI-powered sports analytics system serving coaches and athletes.",
+    role: "Handled payment infrastructure integration and assisted with AI feature rollout.",
+    implementation: "Node.js, Stripe API, LangChain, OpenAI API.",
+    features: ["Subscription management", "Stripe checkout workflows", "AI analytics integration", "Production debugging"],
+    challenges: ["Managing complex subscription state across platforms", "Optimizing LLM prompt response times"],
+    outcome: "Successfully launched premium tiers and AI features to active users."
+  },
+  {
+    id: "airavat",
+    title: "Airavat",
+    tagline: "AI-powered offline-first healthcare PWA",
+    impact: "Hybrid AI routing between local ONNX inference and cloud LLMs to assist Community Health Workers in connectivity-poor regions.",
+    techStack: ["Next.js", "FastAPI", "ONNX", "IndexedDB", "TailwindCSS"],
+    github: "https://github.com/Loki3306/Airavat_Hack",
+    overview: "Emergency response and disaster coordination platform designed for rural healthcare workers.",
+    role: "Built frontend, backend APIs, data flows, and AI integrations.",
+    implementation: "FastAPI, Next.js, PostgreSQL, ONNX Runtime Web.",
+    features: ["Offline-first PWA", "Local ONNX inference", "Cloud LLM sync via IndexedDB", "Health record management"],
+    challenges: ["Implementing robust IndexedDB sync logic for intermittent connections", "Running ML models in-browser efficiently"],
+    outcome: "Functional prototype demonstrated during hackathon, proving offline AI viability."
+  },
+  {
+    id: "scholarship-chain",
+    title: "Multi Authority Scholarship Chain",
+    tagline: "Blockchain decentralized scholarship management",
+    impact: "Authority verification system enabling trusted approvals through multi-signature Ethereum smart contracts.",
+    techStack: ["Next.js", "Ethereum", "Hardhat", "Solidity", "Prisma"],
+    github: "https://github.com/Loki3306/Multi-Authority-Scholarship-Chain",
+    overview: "Decentralized scholarship verification system using blockchain to prevent fraud and streamline approvals.",
+    role: "Wrote smart contracts and built the web3 frontend integration.",
+    implementation: "Solidity smart contracts, Hardhat, Next.js, Ethers.js.",
+    features: ["Multi-signature approvals", "Immutable record keeping", "Role-based access control", "Transparent auditing"],
+    challenges: ["Optimizing smart contract gas costs", "Building a seamless UX over complex web3 transactions"],
+    outcome: "3rd Place Winner."
+  },
+  {
+    id: "stock-simulator",
+    title: "Stock Simulator",
+    tagline: "Real-time stock market simulation engine",
+    impact: "Built a high-performance simulation engine to backtest and visualize algorithmic trading strategies.",
+    techStack: ["Python", "React", "WebSockets", "Pandas", "PostgreSQL"],
+    github: "https://github.com/Loki3306/stock_simulator_hack",
+    overview: "A platform for testing, visualizing, and analyzing algorithmic trading strategies against historical and simulated live data.",
+    role: "Developed the core simulation engine and real-time visualization dashboard.",
+    implementation: "Python backend, WebSockets for streaming, React for live charts.",
+    features: ["Real-time data streaming", "Strategy backtesting", "Portfolio analytics", "Live charting"],
+    challenges: ["Handling high-frequency WebSocket data without frontend lag", "Accurate order matching simulation"],
+    outcome: "Created a robust tool for validating quantitative strategies."
   },
   {
     id: "ocr-llm",
-    rank: 4,
-    title: "OCR + LLM Extraction Pipeline",
-    tagline: "Automated document intelligence: text extraction → local LLM reasoning",
-    category: "AI & Intelligent Systems",
-    categoryId: "ai",
-    problem:
-      "Manual document processing is slow, error-prone, and doesn't scale — businesses need automated extraction pipelines that understand context, not just characters.",
-    solution:
-      "A full extraction pipeline combining high-accuracy OCR text extraction with Ollama-served local LLM reasoning — documents in, structured insights out.",
-    techStack: ["Python", "Ollama", "OCR", "FastAPI", "LangChain", "PostgreSQL"],
-    highlights: [
-      "Local LLM serving via Ollama — no API costs",
-      "OCR preprocessing pipeline for noisy document types",
-      "FastAPI microservice exposing extraction endpoints",
-      "Structured output parsing and database storage",
-      "Handles PDFs, images, scanned documents",
-    ],
-    github: "https://github.com/Loki3306",
-    isFlagship: true,
-    accentColor: "rgba(238, 76, 44, 0.07)",
-    accentRgb: "238, 76, 44",
-  },
-  {
-    id: "smart-farming",
-    rank: 5,
-    title: "Smart Farming IoT System",
-    tagline: "Real-time agricultural monitoring through hardware sensors and cloud telemetry",
-    category: "Emerging Tech",
-    categoryId: "emerging",
-    problem:
-      "Traditional farming relies on manual observation. Soil moisture, temperature, and humidity fluctuations go undetected until crop damage occurs.",
-    solution:
-      "An IoT sensor network built on Arduino with cloud-connected telemetry — real-time environmental monitoring with a web dashboard for farm condition visualization.",
-    techStack: ["Arduino", "IoT Sensors", "Node.js", "Firebase", "WebSocket"],
-    highlights: [
-      "Arduino microcontroller with multi-sensor array",
-      "Real-time telemetry streaming to cloud",
-      "WebSocket-based live dashboard updates",
-      "Soil moisture, temperature, humidity tracking",
-      "Hardware-to-software full pipeline",
-    ],
-    github: "https://github.com/Loki3306",
-    isFlagship: true,
-    accentColor: "rgba(0, 151, 157, 0.08)",
-    accentRgb: "0, 151, 157",
-  },
-  // Additional non-flagship projects
-  {
-    id: "auth-system",
-    title: "JWT Authentication System",
-    tagline: "Multi-role secure authentication with session management",
-    category: "Full Stack Platforms",
-    categoryId: "fullstack",
-    problem: "Building secure, role-based access control that scales without coupling auth to business logic.",
-    solution: "JWT-based authentication microservice with refresh token rotation, role guards, and Redis session caching.",
-    techStack: ["Node.js", "JWT", "PostgreSQL", "Redis", "Express.js"],
-    highlights: ["Refresh token rotation", "Role-based access control", "Redis session caching", "Middleware-level guards"],
-    github: "https://github.com/Loki3306",
-    isFlagship: false,
-    accentColor: "rgba(99, 91, 255, 0.06)",
-    accentRgb: "99, 91, 255",
-  },
-  {
-    id: "realtime-socket",
-    title: "Real-time Socket System",
-    tagline: "Event-driven live communication platform with persistent rooms",
-    category: "Emerging Tech",
-    categoryId: "emerging",
-    problem: "Standard REST APIs can't push updates to connected clients in real-time without polling.",
-    solution: "Socket.IO event bus with Redis adapter for multi-instance horizontal scaling and persistent message queuing.",
-    techStack: ["Socket.IO", "Node.js", "Redis", "Express.js"],
-    highlights: ["Redis pub/sub adapter", "Horizontal scaling support", "Persistent message queuing", "Room management"],
-    github: "https://github.com/Loki3306",
-    isFlagship: false,
-    accentColor: "rgba(255, 111, 0, 0.06)",
-    accentRgb: "255, 111, 0",
-  },
-  {
-    id: "rnnoise",
-    title: "RNNoise Audio Denoiser",
-    tagline: "Recurrent neural network noise suppression for audio inputs",
-    category: "AI & Intelligent Systems",
-    categoryId: "ai",
-    problem: "Raw microphone captures in real environments contain broadband noise that degrades downstream AI audio processing.",
-    solution: "RNNoise-based preprocessing pipeline that suppresses background noise before feeding audio into signal processing or ML models.",
-    techStack: ["Python", "RNNoise", "NumPy", "SciPy", "DSP"],
-    highlights: ["Real-time inference", "Recurrent noise model", "Plug-and-play preprocessing module", "Low latency footprint"],
-    isFlagship: false,
-    accentColor: "rgba(247, 37, 133, 0.06)",
-    accentRgb: "247, 37, 133",
-  },
+    title: "OCR + Local LLM Pipeline",
+    tagline: "Secure document extraction and structuring",
+    impact: "End-to-end OCR pipeline integrated with Local LLM (Ollama) to parse and structure complex documents on-premise.",
+    techStack: ["Python", "FastAPI", "Tesseract", "LangChain", "Ollama"],
+    github: "https://github.com/Loki3306/OCR-Pipeline",
+    overview: "An enterprise-grade document extraction tool that keeps sensitive data entirely on-premise.",
+    role: "Designed the ingestion pipeline and engineered the LLM extraction prompts.",
+    implementation: "Python, FastAPI, Tesseract OCR, LangChain, Ollama.",
+    features: ["Local inference", "Structured JSON output", "Multi-page PDF parsing", "High-accuracy text extraction"],
+    challenges: ["Dealing with poor quality scans", "Ensuring consistent JSON schemas from local LLMs"],
+    outcome: "Successfully automated manual data entry workflows securely."
+  }
 ];
 
-const sectionVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as const },
-  },
-};
-
 export default function ProjectsSection() {
-  const [activeCategory, setActiveCategory] = useState("all");
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isInteracting, setIsInteracting] = useState(false);
 
-  const filtered =
-    activeCategory === "all" ? projects : projects.filter((p) => p.categoryId === activeCategory);
+  // Auto-scroll logic
+  useEffect(() => {
+    if (isHovered || isInteracting || expandedId !== null) return;
+    
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => {
+        const next = (prev + 1) % projects.length;
+        scrollToIndex(next);
+        return next;
+      });
+    }, 6000);
+    
+    return () => clearInterval(interval);
+  }, [isHovered, isInteracting, expandedId]);
 
-  const flagships = filtered.filter((p) => p.isFlagship);
-  const others = filtered.filter((p) => !p.isFlagship);
+  const scrollToIndex = useCallback((index: number) => {
+    if (!scrollRef.current) return;
+    const container = scrollRef.current;
+    const cards = container.querySelectorAll('.project-card');
+    if (cards[index]) {
+      const card = cards[index] as HTMLElement;
+      const scrollLeft = card.offsetLeft - container.offsetLeft - 24; 
+      container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+    }
+  }, []);
+
+  const handleNext = useCallback(() => {
+    setIsInteracting(true);
+    setCurrentIndex((prev) => {
+      const next = Math.min(prev + 1, projects.length - 1);
+      scrollToIndex(next);
+      return next;
+    });
+    setTimeout(() => setIsInteracting(false), 2000);
+  }, [scrollToIndex]);
+
+  const handlePrev = useCallback(() => {
+    setIsInteracting(true);
+    setCurrentIndex((prev) => {
+      const next = Math.max(prev - 1, 0);
+      scrollToIndex(next);
+      return next;
+    });
+    setTimeout(() => setIsInteracting(false), 2000);
+  }, [scrollToIndex]);
+
+  // Scroll event to update index
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+    const container = scrollRef.current;
+    const scrollPosition = container.scrollLeft;
+    const cardWidth = container.clientWidth * 0.85 > 600 ? 600 : container.clientWidth * 0.85; 
+    const newIndex = Math.round(scrollPosition / cardWidth);
+    
+    if (newIndex >= 0 && newIndex < projects.length && newIndex !== currentIndex) {
+      setCurrentIndex(newIndex);
+    }
+  };
 
   return (
-    <section id="projects" className="py-24 px-6 lg:px-8 max-w-6xl mx-auto w-full relative h-auto">
-      {/* Header */}
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        variants={sectionVariants}
-        className="mb-12 text-center md:text-left"
-      >
-        <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
-          <span className="text-[10px] uppercase font-mono tracking-widest text-zinc-500 font-bold">
-            {"// Projects"}
-          </span>
+    <section id="projects" className="py-16 w-full relative">
+      <div className="px-6 lg:px-8 max-w-6xl mx-auto mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-[12px] uppercase font-mono tracking-widest text-accent font-bold">
+              {"// SELECTED WORK"}
+            </span>
+          </div>
+          <h2 className="heading-section text-white mb-4">Selected Work</h2>
+          <div className="w-12 h-1 bg-accent" />
         </div>
-        <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-4">
-          Systems Built.<br className="hidden md:block" /> Problems Solved.
-        </h2>
-        <div className="h-[1px] w-24 bg-white/20 mx-auto md:mx-0" />
-      </motion.div>
 
-      {/* Category Filter */}
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-80px" }}
-        variants={sectionVariants}
-        className="mb-10 flex flex-wrap gap-2 justify-center md:justify-start"
-      >
-        {categories.map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => setActiveCategory(cat.id)}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-[11px] font-mono transition-all duration-300 ${
-              activeCategory === cat.id
-                ? "bg-white text-black border-white"
-                : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
-            }`}
+        {/* Carousel Navigation */}
+        <div className="flex items-center gap-4">
+          <div className="font-mono text-zinc-500 text-sm mr-4">
+            <span className="text-white">{currentIndex + 1}</span> / {projects.length}
+          </div>
+          <button 
+            onClick={handlePrev}
+            disabled={currentIndex === 0}
+            aria-label="Previous project"
+            className="w-12 h-12 rounded-full border border-zinc-800 bg-zinc-900/50 flex items-center justify-center text-white hover:border-accent hover:text-accent disabled:opacity-30 disabled:hover:border-zinc-800 disabled:hover:text-white transition-colors"
           >
-            {cat.icon}
-            {cat.label}
+            <FaChevronLeft className="w-4 h-4 pr-0.5" />
           </button>
-        ))}
-      </motion.div>
-
-      {/* Flagship Projects */}
-      <AnimatePresence mode="wait">
-        {flagships.length > 0 && (
-          <motion.div
-            key={activeCategory + "-flagships"}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.4 }}
-            className="mb-10"
+          <button 
+            onClick={handleNext}
+            disabled={currentIndex === projects.length - 1}
+            aria-label="Next project"
+            className="w-12 h-12 rounded-full border border-zinc-800 bg-zinc-900/50 flex items-center justify-center text-white hover:border-accent hover:text-accent disabled:opacity-30 disabled:hover:border-zinc-800 disabled:hover:text-white transition-colors"
           >
-            {activeCategory === "all" && (
-              <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-6 font-bold">
-                Flagship Projects // Ranked by Technical Depth
-              </p>
-            )}
+            <FaChevronRight className="w-4 h-4 pl-0.5" />
+          </button>
+        </div>
+      </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {flagships.map((proj, idx) => {
-                const isExpanded = expandedId === proj.id;
+      <div 
+        ref={scrollRef}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onScroll={handleScroll}
+        className="w-full overflow-x-auto snap-x snap-mandatory flex items-start gap-6 px-6 lg:px-8 pb-12 no-scrollbar"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        {/* Spacer for alignment to grid */}
+        <div className="min-w-[max(0px,calc((100vw-72rem)/2))] hidden lg:block snap-center shrink-0" />
+        
+        {projects.map((project, idx) => {
+          const isExpanded = expandedId === project.id;
+          
+          return (
+            <motion.div 
+              key={project.id}
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, delay: idx * 0.1 }}
+              className="project-card snap-center shrink-0 w-[85vw] sm:w-[500px] lg:w-[600px] flex flex-col group self-start"
+            >
+              <div className="flex flex-col flex-1 glass-panel p-8 md:p-10 rounded-3xl border border-zinc-800/50 hover:border-accent/30 transition-colors">
+                <h3 className="text-2xl md:text-3xl font-serif text-white mb-2">{project.title}</h3>
+                <p className="text-body text-zinc-400 mb-6 h-[48px] overflow-hidden">
+                  {project.tagline}
+                </p>
 
-                return (
-                  <motion.div
-                    key={proj.id}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.06 }}
-                    className={`glass-panel linear-border-glow rounded-3xl overflow-hidden hover:border-zinc-700 transition-all duration-300 ${
-                      isExpanded ? "md:col-span-2" : ""
-                    }`}
-                    style={{ backgroundColor: proj.accentColor }}
+                <div className="flex flex-wrap gap-2 mb-8">
+                  {project.techStack.map(tech => (
+                    <span key={tech} className="px-2.5 py-1 text-[10px] font-mono border border-zinc-800 bg-zinc-950/50 text-zinc-300 rounded uppercase tracking-wider">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="mb-8 p-5 bg-zinc-900/40 border border-zinc-800/50 rounded-xl">
+                  <span className="block text-[10px] font-mono text-accent uppercase tracking-widest mb-2">Impact</span>
+                  <p className="text-sm text-zinc-300 font-light leading-relaxed">{project.impact}</p>
+                </div>
+
+                <div className="flex flex-wrap gap-4 mt-auto">
+                  <button 
+                    onClick={() => setExpandedId(isExpanded ? null : project.id)}
+                    className="px-6 py-3 bg-white text-black text-xs font-bold uppercase tracking-widest rounded hover:bg-zinc-200 transition-colors"
                   >
-                    <div className="p-6">
-                      <div className="flex items-start justify-between gap-3 mb-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2 flex-wrap">
-                            {proj.rank && (
-                              <span
-                                className="text-[9px] font-mono font-bold px-2 py-0.5 rounded border"
-                                style={{
-                                  color: `rgb(${proj.accentRgb})`,
-                                  borderColor: `rgba(${proj.accentRgb}, 0.3)`,
-                                  backgroundColor: `rgba(${proj.accentRgb}, 0.08)`,
-                                }}
-                              >
-                                #{proj.rank} FLAGSHIP
-                              </span>
-                            )}
-                            <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-wider">
-                              {proj.category}
-                            </span>
-                          </div>
-                          <h3 className="text-base md:text-lg font-bold text-white mb-1">{proj.title}</h3>
-                          <p className="text-zinc-500 text-xs font-light">{proj.tagline}</p>
+                    {isExpanded ? "Close Details" : "View Details"}
+                  </button>
+                  {project.github && (
+                    <a href={project.github} target="_blank" rel="noopener noreferrer" className="px-6 py-3 border border-zinc-800 text-white flex items-center gap-2 text-xs font-bold uppercase tracking-widest rounded hover:border-accent hover:text-accent transition-colors">
+                      <FaGithub className="w-4 h-4" />
+                      GitHub
+                    </a>
+                  )}
+                </div>
+
+                {/* Expandable Details Area */}
+                <AnimatePresence>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.35, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pt-8 mt-8 border-t border-zinc-800/50 flex flex-col gap-8 text-sm">
+                        
+                        <div>
+                          <h4 className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-3">Overview</h4>
+                          <p className="text-zinc-300 font-light leading-relaxed">{project.overview}</p>
+                        </div>
+                        
+                        <div>
+                          <h4 className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-3">My Role</h4>
+                          <p className="text-zinc-300 font-light leading-relaxed">{project.role}</p>
                         </div>
 
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          {proj.github && (
-                            <a
-                              href={proj.github}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-500 hover:text-white hover:border-zinc-600 transition-colors"
-                            >
-                              <SiGithub className="w-3.5 h-3.5" />
-                            </a>
-                          )}
-                          {proj.demo && (
-                            <a
-                              href={proj.demo}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-500 hover:text-white hover:border-zinc-600 transition-colors"
-                            >
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </a>
-                          )}
+                        <div>
+                          <h4 className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-3">Technical Implementation</h4>
+                          <p className="text-zinc-300 font-light leading-relaxed">{project.implementation}</p>
                         </div>
-                      </div>
 
-                      {/* Problem → Solution */}
-                      <div className="flex flex-col gap-2 mb-4">
-                        <div className="rounded-xl p-3 bg-black/20 border border-zinc-900/50">
-                          <p className="text-[9px] font-mono uppercase text-zinc-600 mb-1">Problem</p>
-                          <p className="text-zinc-400 text-xs leading-relaxed font-light">{proj.problem}</p>
+                        <div>
+                          <h4 className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-3">Key Features</h4>
+                          <ul className="flex flex-col gap-2 text-zinc-300 font-light">
+                            {project.features.map((f, i) => (
+                              <li key={i} className="flex gap-3"><span className="text-zinc-600">•</span> {f}</li>
+                            ))}
+                          </ul>
                         </div>
+
+                        <div>
+                          <h4 className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mb-3">Challenges</h4>
+                          <ul className="flex flex-col gap-2 text-zinc-300 font-light">
+                            {project.challenges.map((c, i) => (
+                              <li key={i} className="flex gap-3"><span className="text-zinc-600">•</span> {c}</li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div>
+                          <h4 className="text-[10px] font-mono text-accent uppercase tracking-widest mb-3">Outcome</h4>
+                          <p className="text-white font-medium leading-relaxed">{project.outcome}</p>
+                        </div>
+
                       </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-                      {/* Tech stack */}
-                      <div className="flex flex-wrap gap-1.5 mb-4">
-                        {proj.techStack.map((tech) => (
-                          <span
-                            key={tech}
-                            className="px-2 py-0.5 rounded text-[9px] font-mono bg-zinc-950 border border-zinc-800 text-zinc-500"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
+              </div>
+            </motion.div>
+          );
+        })}
 
-                      <button
-                        onClick={() => setExpandedId(isExpanded ? null : proj.id)}
-                        className="flex items-center gap-1 text-[10px] font-mono text-zinc-600 hover:text-zinc-300 transition-colors"
-                      >
-                        {isExpanded ? "Show less" : "View solution & highlights"}
-                        <motion.div animate={{ rotate: isExpanded ? 90 : 0 }} transition={{ duration: 0.2 }}>
-                          <ChevronRight className="w-3 h-3" />
-                        </motion.div>
-                      </button>
-                    </div>
-
-                    <AnimatePresence>
-                      {isExpanded && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.35 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="px-6 pb-6 border-t border-zinc-900/50 pt-5">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                              <div>
-                                <p className="text-[9px] font-mono uppercase text-zinc-600 mb-2">Solution</p>
-                                <p className="text-zinc-300 text-xs leading-relaxed font-light">{proj.solution}</p>
-                              </div>
-                              <div>
-                                <p className="text-[9px] font-mono uppercase text-zinc-600 mb-2">
-                                  Architecture Highlights
-                                </p>
-                                <ul className="flex flex-col gap-1.5">
-                                  {proj.highlights.map((h, i) => (
-                                    <li key={i} className="flex items-start gap-2 text-[11px] text-zinc-400">
-                                      <span
-                                        className="w-1.5 h-1.5 rounded-full mt-1 shrink-0"
-                                        style={{ backgroundColor: `rgb(${proj.accentRgb})` }}
-                                      />
-                                      {h}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Other Projects */}
-      <AnimatePresence mode="wait">
-        {others.length > 0 && (
-          <motion.div
-            key={activeCategory + "-others"}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-          >
-            {activeCategory === "all" && (
-              <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-6 font-bold">
-                Engineering Systems // Additional Projects
-              </p>
-            )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {others.map((proj, idx) => (
-                <motion.div
-                  key={proj.id}
-                  layout
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                  className="glass-panel linear-border-glow rounded-2xl p-5 hover:border-zinc-700 transition-all duration-300 flex flex-col"
-                  style={{ backgroundColor: proj.accentColor }}
-                >
-                  <div
-                    className="w-2 h-2 rounded-full mb-3"
-                    style={{ backgroundColor: `rgb(${proj.accentRgb})` }}
-                  />
-                  <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-wider mb-1">
-                    {proj.category}
-                  </span>
-                  <h4 className="text-white text-sm font-bold mb-1.5">{proj.title}</h4>
-                  <p className="text-zinc-500 text-[11px] leading-relaxed font-light mb-3 flex-1">{proj.tagline}</p>
-                  <div className="flex flex-wrap gap-1 mt-auto">
-                    {proj.techStack.slice(0, 3).map((tech) => (
-                      <span
-                        key={tech}
-                        className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-zinc-950 border border-zinc-800/60 text-zinc-600"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                    {proj.techStack.length > 3 && (
-                      <span className="text-[9px] font-mono text-zinc-700">+{proj.techStack.length - 3}</span>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        {/* End spacer */}
+        <div className="min-w-[max(0px,calc((100vw-72rem)/2))] hidden lg:block shrink-0" />
+      </div>
     </section>
   );
 }
