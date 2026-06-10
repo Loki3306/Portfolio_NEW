@@ -242,7 +242,7 @@ export default function ProjectsSection() {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onScroll={handleScroll}
-        className="w-full overflow-x-auto snap-x snap-mandatory flex items-start gap-6 px-6 lg:px-8 pb-12 no-scrollbar"
+        className="w-full overflow-x-auto snap-x snap-mandatory flex items-stretch gap-6 px-6 lg:px-8 pb-12 no-scrollbar"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {/* Spacer for alignment to grid */}
@@ -258,7 +258,7 @@ export default function ProjectsSection() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6, delay: idx * 0.1 }}
-              className="project-card snap-center shrink-0 w-[85vw] sm:w-[500px] lg:w-[600px] flex flex-col group self-start"
+              className="project-card snap-center shrink-0 w-[85vw] sm:w-[500px] lg:w-[600px] flex flex-col group"
               onMouseEnter={() => window.dispatchEvent(new CustomEvent('projectHover', { detail: { projectId: project.id } }))}
               onMouseLeave={() => window.dispatchEvent(new CustomEvent('projectHover', { detail: { projectId: null } }))}
             >

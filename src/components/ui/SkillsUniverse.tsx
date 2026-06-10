@@ -31,7 +31,6 @@ const categories = [
   { id: "database", label: "Databases" },
   { id: "ai", label: "AI / ML" },
   { id: "devops", label: "DevOps" },
-  { id: "hardware", label: "Hardware / IoT" },
   { id: "soft", label: "Soft Skills" },
 ];
 
@@ -108,15 +107,6 @@ const skillsData: SkillItem[] = [
   { name: "Render", categoryIds: ["devops"], icon: <SiRender className="w-5 h-5" /> },
   { name: "Railway", categoryIds: ["devops"], icon: <SiRailway className="w-5 h-5" /> },
   { name: "Postman", categoryIds: ["devops"], icon: <SiPostman className="w-5 h-5" /> },
-
-  // Hardware / IoT
-  { name: "ESP32", categoryIds: ["hardware"], icon: <SiEspressif className="w-5 h-5" /> },
-  { name: "Arduino", categoryIds: ["hardware"], icon: <SiArduino className="w-5 h-5" /> },
-  { name: "Raspberry Pi", categoryIds: ["hardware"], icon: <Cpu className="w-5 h-5" /> },
-  { name: "MQTT", categoryIds: ["hardware"], icon: <SiMqtt className="w-5 h-5" /> },
-  { name: "Sensor Integration", categoryIds: ["hardware"], icon: <Cloud className="w-5 h-5" /> },
-  { name: "Embedded Systems", categoryIds: ["hardware"], icon: <Cpu className="w-5 h-5" /> },
-  { name: "ReSpeaker Arrays", categoryIds: ["hardware"], icon: <span className="font-bold font-mono text-xs">MIC</span> },
 
   // Soft Skills
   { name: "Leadership", categoryIds: ["soft"], icon: <Users className="w-5 h-5" /> },
