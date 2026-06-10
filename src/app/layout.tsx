@@ -53,6 +53,9 @@ export const metadata: Metadata = {
     title: "Lokesh Gile | Software Engineer",
     description: "Full Stack AI Software Engineer building scalable products, AI systems, and mobile applications.",
   },
+  icons: {
+    icon: '/lokesh.jpeg',
+  },
 };
 
 export default function RootLayout({
