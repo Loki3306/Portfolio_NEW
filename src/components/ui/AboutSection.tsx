@@ -38,12 +38,12 @@ export default function AboutSection() {
         >
           {/* WHO I AM */}
           <motion.div variants={textVariants} className="space-y-4">
-            <h3 className="text-2xl md:text-3xl font-serif text-white flex items-center gap-3">
+            <h3 className="text-2xl md:text-3xl font-serif text-[#f5c542] flex items-center gap-3">
               <Terminal className="w-6 h-6 text-accent" />
               Who I Am
             </h3>
             <p className="text-body text-zinc-300 leading-relaxed text-lg">
-              I'm Lokesh Gile, a <strong className="text-white font-medium">Full-Stack Engineer</strong> and <strong className="text-white font-medium">Product Builder</strong>. I specialize in taking complex technical requirements and turning them into scalable, production-ready software.
+              I'm Lokesh Gile, a <strong className="text-white font-medium">Full-Stack AI Software Engineer</strong> and <strong className="text-white font-medium">Product Builder</strong>. I specialize in taking complex technical requirements and turning them into scalable, production-ready software.
             </p>
             <p className="text-body text-zinc-400 leading-relaxed">
               I don't just write code—I architect systems, design databases, build intuitive frontends, and configure the infrastructure needed to deploy them.
@@ -52,7 +52,7 @@ export default function AboutSection() {
 
           {/* WHAT I BUILD */}
           <motion.div variants={textVariants} className="space-y-4">
-            <h3 className="text-2xl md:text-3xl font-serif text-white flex items-center gap-3">
+            <h3 className="text-2xl md:text-3xl font-serif text-[#f5c542] flex items-center gap-3">
               <Code2 className="w-6 h-6 text-accent" />
               What I Build
             </h3>
@@ -87,7 +87,7 @@ export default function AboutSection() {
         >
           {/* WHAT DRIVES ME */}
           <motion.div variants={textVariants} className="space-y-4">
-            <h3 className="text-2xl md:text-3xl font-serif text-white flex items-center gap-3">
+            <h3 className="text-2xl md:text-3xl font-serif text-[#f5c542] flex items-center gap-3">
               <Cpu className="w-6 h-6 text-accent" />
               What Drives Me
             </h3>
@@ -101,7 +101,7 @@ export default function AboutSection() {
 
           {/* COMMUNITY & LEADERSHIP */}
           <motion.div variants={textVariants} className="space-y-4">
-            <h3 className="text-2xl md:text-3xl font-serif text-white flex items-center gap-3">
+            <h3 className="text-2xl md:text-3xl font-serif text-[#f5c542] flex items-center gap-3">
               <Users className="w-6 h-6 text-accent" />
               Community & Leadership
             </h3>

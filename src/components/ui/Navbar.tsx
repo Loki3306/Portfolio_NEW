@@ -73,7 +73,7 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden absolute top-20 left-4 right-4 glass-panel rounded-2xl p-6 flex flex-col gap-4 z-40"
+            className="md:hidden absolute top-20 left-4 right-4 bg-[#0a0a0a]/95 backdrop-blur-2xl border border-zinc-800/80 shadow-[0_8px_32px_rgba(0,0,0,0.8)] rounded-2xl p-6 flex flex-col gap-4 z-40"
           >
             {navItems.map((item) => (
               <a

@@ -81,7 +81,7 @@ export default function AchievementsSection() {
               </div>
 
               <div className="mt-auto">
-                <h3 className="text-3xl lg:text-4xl font-serif text-white font-bold leading-tight mb-6">
+                <h3 className="text-3xl lg:text-4xl font-serif text-[#f5c542] font-bold leading-tight mb-6">
                   {achievement.title}
                 </h3>
 

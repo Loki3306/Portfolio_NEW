@@ -209,7 +209,7 @@ export default function ProjectsSection() {
               {"// SELECTED WORK"}
             </span>
           </div>
-          <h2 className="heading-section text-white mb-4">Selected Work</h2>
+          <h2 className="heading-section text-[#f5c542] mb-4">Selected Work</h2>
           <div className="w-12 h-1 bg-accent" />
         </div>
 
@@ -259,8 +259,17 @@ export default function ProjectsSection() {
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6, delay: idx * 0.1 }}
               className="project-card snap-center shrink-0 w-[85vw] sm:w-[500px] lg:w-[600px] flex flex-col group self-start"
+              onMouseEnter={() => window.dispatchEvent(new CustomEvent('projectHover', { detail: { projectId: project.id } }))}
+              onMouseLeave={() => window.dispatchEvent(new CustomEvent('projectHover', { detail: { projectId: null } }))}
             >
               <div className="flex flex-col flex-1 glass-panel p-8 md:p-10 rounded-3xl border border-zinc-800/50 hover:border-accent/30 transition-colors">
+                {['neuro-controlled-hearing-aid', 'eovi', 'skillzo'].includes(project.id) && (
+                  <div className="mb-3">
+                    <span className="px-2 py-1 bg-zinc-800/80 text-zinc-300 text-[10px] font-mono uppercase tracking-widest rounded-md border border-zinc-700/50">
+                      Core Contributor
+                    </span>
+                  </div>
+                )}
                 <h3 className="text-2xl md:text-3xl font-serif text-white mb-2">{project.title}</h3>
                 <p className="text-body text-zinc-400 mb-6 h-[48px] overflow-hidden">
                   {project.tagline}

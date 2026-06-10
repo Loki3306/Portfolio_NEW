@@ -30,7 +30,7 @@ export default function FooterCTA() {
             <span className="text-xs font-mono text-accent uppercase tracking-widest font-bold mb-4 block">
               Start A Conversation
             </span>
-            <h2 className="text-4xl md:text-5xl font-serif text-white leading-tight">
+            <h2 className="text-4xl md:text-5xl font-serif text-[#f5c542] leading-tight">
               Ready to build <br /> something exceptional?
             </h2>
           </div>
@@ -100,11 +100,12 @@ export default function FooterCTA() {
           <div className="w-56 h-56 md:w-64 md:h-64 rounded-full overflow-hidden border border-zinc-700/50 shadow-[0_0_30px_rgba(245,165,36,0.15)] relative bg-zinc-900 flex items-center justify-center group-hover:scale-[1.02] transition-transform duration-500">
             {!imgError ? (
               <Image 
-                src="/profile.jpg" 
+                src="/lokesh.jpeg" 
                 alt="Lokesh Gile"
                 fill
                 sizes="(max-width: 768px) 224px, 256px"
-                className="w-full h-full object-cover" 
+                className="object-cover object-[center_top]"
+                priority
                 onError={() => setImgError(true)}
               />
             ) : (

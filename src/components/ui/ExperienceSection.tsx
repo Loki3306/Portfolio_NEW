@@ -51,7 +51,7 @@ const experiences: ExperienceItem[] = [
     id: "eovi",
     role: "App Developer",
     org: "EOVI",
-    timeline: "2024",
+    timeline: "2025",
     mission: "Building and enhancing a React Native mobile platform focused on content discovery, curation, and social sharing.",
     responsibilities: [
       "Mobile Development",

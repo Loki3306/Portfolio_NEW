@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Navbar from "@/components/ui/Navbar";
+import GlobalBackground from "@/components/ui/GlobalBackground";
 import "./globals.css";
 
 const inter = Inter({
@@ -38,11 +39,11 @@ const cabinetGrotesk = localFont({
 
 export const metadata: Metadata = {
   title: "Lokesh Gile | Software Engineer",
-  description: "Portfolio of Lokesh Gile - Full Stack Product Engineer building scalable products, AI systems, and mobile applications.",
-  keywords: ["Software Engineer", "Full Stack Developer", "AI Engineer", "React Developer", "Next.js Developer", "Lokesh Gile"],
+  description: "Portfolio of Lokesh Gile - Full Stack AI Software Engineer building scalable products, AI systems, and mobile applications.",
+  keywords: ["Software Engineer", "Full Stack AI Software Engineer", "AI Engineer", "React Developer", "Next.js Developer", "Lokesh Gile"],
   openGraph: {
     title: "Lokesh Gile | Software Engineer",
-    description: "Full Stack Product Engineer building scalable products, AI systems, and mobile applications.",
+    description: "Full Stack AI Software Engineer building scalable products, AI systems, and mobile applications.",
     url: "https://lokeshgile.com",
     siteName: "Lokesh Gile Portfolio",
     type: "website",
@@ -50,7 +51,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Lokesh Gile | Software Engineer",
-    description: "Full Stack Product Engineer building scalable products, AI systems, and mobile applications.",
+    description: "Full Stack AI Software Engineer building scalable products, AI systems, and mobile applications.",
   },
 };
 
@@ -83,8 +84,11 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-background text-foreground min-h-screen antialiased selection:bg-accent selection:text-black font-sans">
+        <GlobalBackground />
         <Navbar />
-        {children}
+        <main className="relative z-10">
+          {children}
+        </main>
         <Analytics />
         <SpeedInsights />
       </body>

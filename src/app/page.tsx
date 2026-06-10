@@ -10,7 +10,7 @@ const ExperienceSection = dynamic(() => import("@/components/ui/ExperienceSectio
 const ProjectsSection = dynamic(() => import("@/components/ui/ProjectsSection"));
 const AchievementsSection = dynamic(() => import("@/components/ui/AchievementsSection"));
 const AIAssistant = dynamic(() => import("@/components/ui/AIAssistant"), { ssr: false });
-import ParticleLoader from "@/components/scene/ParticleLoader";
+import ProgressiveLoader from "@/components/ui/ProgressiveLoader";
 const FooterCTA = dynamic(() => import("@/components/ui/FooterCTA"));
 
 // Dynamically import the R3F scene to prevent SSR issues (window is not defined)
@@ -59,8 +59,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   return (
-    <div className="relative min-h-screen flex flex-col bg-background overflow-hidden selection:bg-accent selection:text-black">
-      {loading && <ParticleLoader onComplete={() => setLoading(false)} />}
+    <div className="relative min-h-screen flex flex-col overflow-hidden selection:bg-accent selection:text-black">
+      {loading && <ProgressiveLoader onComplete={() => setLoading(false)} />}
       
       {/* Scroll Progress Indicator */}
       <motion.div
@@ -99,7 +99,7 @@ export default function Home() {
             {/* Powerful Headline */}
             <motion.div variants={itemVariants} className="mb-8">
               <h1 className="heading-hero text-white mb-6">
-                Full-Stack Engineer.
+                Full-Stack AI Software Engineer.
               </h1>
               <p className="text-body max-w-xl text-zinc-300 font-medium text-lg leading-relaxed mb-6">
                 Building scalable products, AI systems, and business platforms from idea to deployment.

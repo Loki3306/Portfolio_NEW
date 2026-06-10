@@ -141,7 +141,7 @@ export default function SkillsUniverse() {
   return (
     <section id="skills" ref={scrollRef} className="py-16 px-6 lg:px-8 max-w-6xl mx-auto w-full relative">
       <div className="mb-12">
-        <h2 className="heading-section text-white mb-4">Tech Stack</h2>
+        <h2 className="heading-section text-[#f5c542] mb-4">Tech Stack</h2>
         <div className="w-12 h-1 bg-accent" />
       </div>
 
