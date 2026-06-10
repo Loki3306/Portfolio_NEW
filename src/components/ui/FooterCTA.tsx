@@ -47,7 +47,7 @@ export default function FooterCTA() {
             </a>
             
             <a 
-              href={`mailto:lokeshgile11@gmail.com?subject=${encodeURIComponent("Opportunity Discussion - Portfolio Inquiry")}&body=${encodeURIComponent("Hi Lokesh,\n\nI came across your portfolio and was impressed by your work.\n\nI would like to discuss a potential opportunity/project with you.\n\nLooking forward to connecting.\n\nBest Regards,\n\n[Your Name]\n[Company]")}`}
+              href={`mailto:lokeshgile14@gmail.com?subject=${encodeURIComponent("Opportunity Discussion - Portfolio Inquiry")}&body=${encodeURIComponent("Hi Lokesh,\n\nI came across your portfolio and was impressed by your work.\n\nI would like to discuss a potential opportunity/project with you.\n\nLooking forward to connecting.\n\nBest Regards,\n\n[Your Name]\n[Company]")}`}
               className="flex items-center justify-center gap-2 px-6 py-3 bg-white text-black w-full sm:w-auto text-xs font-bold uppercase tracking-widest rounded hover:bg-zinc-200 transition-colors"
             >
               <FaEnvelope className="w-4 h-4" />
