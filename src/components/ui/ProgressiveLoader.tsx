@@ -15,14 +15,11 @@ export default function ProgressiveLoader({ onComplete }: { onComplete: () => vo
   const [showSkip, setShowSkip] = useState(false);
 
   useEffect(() => {
-    // 1. Check LocalStorage for repeat visits
-    const hasVisited = localStorage.getItem("portfolio_visited");
-    
     // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (hasVisited === "true" || prefersReducedMotion) {
-      // Bypass instantly
+    if (prefersReducedMotion) {
+      // Bypass instantly for accessibility
       setIsVisible(false);
       onComplete();
       return;
@@ -36,9 +33,8 @@ export default function ProgressiveLoader({ onComplete }: { onComplete: () => vo
       });
     }, 500);
 
-    // 3. Mark as visited and remove loader after 1.8 seconds max
+    // 3. Remove loader after 1.8 seconds max
     const completeTimer = setTimeout(() => {
-      localStorage.setItem("portfolio_visited", "true");
       setIsVisible(false);
       setTimeout(onComplete, 500); // Allow fade-out animation to finish
     }, 1800);
@@ -56,7 +52,6 @@ export default function ProgressiveLoader({ onComplete }: { onComplete: () => vo
   }, [onComplete]);
 
   const handleSkip = () => {
-    localStorage.setItem("portfolio_visited", "true");
     setIsVisible(false);
     setTimeout(onComplete, 500);
   };
